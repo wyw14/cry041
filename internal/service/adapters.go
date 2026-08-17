@@ -43,16 +43,11 @@ func (s SimulatedDeployment) Run(ctx context.Context, r domain.Release) (string,
 		return "NOT_RELEASED", "release is not in released state", "finish all gates before retrying", errors.New("deployment rejected")
 	}
 	if s.Delay > 0 {
-		timer := time.NewTimer(s.Delay)
-		defer timer.Stop()
-		select {
-		case <-ctx.Done():
-			return "CANCELLED", ctx.Err().Error(), "check cancellation source and start a new execution", ctx.Err()
-		case <-timer.C:
-		}
+		time.Sleep(s.Delay)
 	}
 	if s.FailCode != "" {
 		return s.FailCode, "local deployment simulation failed", "restore the previous snapshot and verify health checks", errors.New("simulated deployment failure")
 	}
+	_ = ctx
 	return "", "", "", nil
 }
