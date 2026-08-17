@@ -76,7 +76,10 @@ type Release struct {
 
 func (r Release) Clone() Release {
 	out := r
-	out.Answers = r.Answers
+	out.Answers = slices.Clone(r.Answers)
+	for i := range out.Answers {
+		out.Answers[i].EvidenceIDs = slices.Clone(r.Answers[i].EvidenceIDs)
+	}
 	out.Blockers = slices.Clone(r.Blockers)
 	out.Signoffs = slices.Clone(r.Signoffs)
 	if r.Snapshot != nil {
@@ -199,8 +202,12 @@ type ReleaseSnapshot struct {
 }
 
 func NewSnapshot(r Release, auditHead string, now time.Time) ReleaseSnapshot {
+	answers := slices.Clone(r.Answers)
+	for i := range answers {
+		answers[i].EvidenceIDs = slices.Clone(r.Answers[i].EvidenceIDs)
+	}
 	return ReleaseSnapshot{ReleaseID: r.ID, VersionName: r.VersionName, TemplateVersion: r.TemplateVersion,
-		Answers: slices.Clone(r.Answers), Blockers: slices.Clone(r.Blockers), Signoffs: slices.Clone(r.Signoffs),
+		Answers: answers, Blockers: slices.Clone(r.Blockers), Signoffs: slices.Clone(r.Signoffs),
 		AuditHead: auditHead, CapturedAt: now}
 }
 

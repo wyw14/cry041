@@ -55,7 +55,7 @@ func (s *ReleaseService) Create(ctx context.Context, in CreateRelease, actor str
 		if getErr != nil {
 			return domain.Release{}, fmt.Errorf("load reuse source: %w", getErr)
 		}
-		r.Answers = previous.Answers
+		r.Answers = domain.MergeReuseAnswers(previous.Answers, template)
 	}
 	created, err := s.releases.Create(ctx, r, in.IdempotencyKey)
 	if err != nil {
