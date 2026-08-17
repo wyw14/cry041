@@ -66,7 +66,7 @@ func (m *Memory) Save(ctx context.Context, r domain.Release, expected int64) err
 	if current.Revision != expected {
 		return domain.ErrConflict
 	}
-	m.releases[r.ID] = r
+	m.releases[r.ID] = r.Clone()
 	return nil
 }
 func (m *Memory) List(ctx context.Context, f application.ReleaseFilter) ([]domain.Release, int, error) {

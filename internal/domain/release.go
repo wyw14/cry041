@@ -75,11 +75,37 @@ type Release struct {
 }
 
 func (r Release) Clone() Release {
+	r.Answers = cloneAnswers(r.Answers)
+	r.Blockers = cloneBlockers(r.Blockers)
+	r.Signoffs = slices.Clone(r.Signoffs)
+	if r.Snapshot != nil {
+		s := r.Snapshot.Clone()
+		r.Snapshot = &s
+	}
 	return r
 }
 
+func cloneAnswers(in []ChecklistAnswer) []ChecklistAnswer {
+	out := slices.Clone(in)
+	for i := range out {
+		out[i].EvidenceIDs = slices.Clone(out[i].EvidenceIDs)
+	}
+	return out
+}
+
+func cloneBlockers(in []Blocker) []Blocker {
+	out := slices.Clone(in)
+	for i := range out {
+		if out[i].Waiver != nil {
+			w := *out[i].Waiver
+			out[i].Waiver = &w
+		}
+	}
+	return out
+}
+
 func (r *Release) ensureMutable() error {
-	if r.State == StateRolledBack {
+	if r.State == StateReleased || r.State == StateRolledBack {
 		return ErrSnapshotReadOnly
 	}
 	return nil
@@ -192,13 +218,13 @@ type ReleaseSnapshot struct {
 
 func NewSnapshot(r Release, auditHead string, now time.Time) ReleaseSnapshot {
 	return ReleaseSnapshot{ReleaseID: r.ID, VersionName: r.VersionName, TemplateVersion: r.TemplateVersion,
-		Answers: slices.Clone(r.Answers), Blockers: slices.Clone(r.Blockers), Signoffs: slices.Clone(r.Signoffs),
+		Answers: cloneAnswers(r.Answers), Blockers: cloneBlockers(r.Blockers), Signoffs: slices.Clone(r.Signoffs),
 		AuditHead: auditHead, CapturedAt: now}
 }
 
 func (s ReleaseSnapshot) Clone() ReleaseSnapshot {
-	s.Answers = slices.Clone(s.Answers)
-	s.Blockers = slices.Clone(s.Blockers)
+	s.Answers = cloneAnswers(s.Answers)
+	s.Blockers = cloneBlockers(s.Blockers)
 	s.Signoffs = slices.Clone(s.Signoffs)
 	return s
 }
