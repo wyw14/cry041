@@ -1,0 +1,1 @@
+{"root":["./src/main.ts","./src/router/index.ts","./src/services/api.ts","./src/stores/releases.test.ts","./src/stores/releases.ts","./src/types/release.ts","./src/app.vue","./src/components/statebadge.vue","./src/pages/releaselist.vue","./src/pages/snapshots.vue","./src/pages/templates.vue","./src/pages/workspace.vue"],"version":"5.7.3"}

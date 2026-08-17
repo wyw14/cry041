@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: gate
+      POSTGRES_PASSWORD: gate
+      POSTGRES_DB: gate
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gate"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - gate-data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d:ro
+  app:
+    build: .
+    environment:
+      HTTP_ADDR: :8080
+      DATABASE_URL: postgres://gate:gate@postgres:5432/gate?sslmode=disable
+      UPLOAD_DIR: /data/uploads
+    ports: ["8080:8080"]
+    depends_on:
+      postgres: {condition: service_healthy}
+    volumes: ["gate-files:/data/uploads"]
+volumes:
+  gate-data:
+  gate-files:

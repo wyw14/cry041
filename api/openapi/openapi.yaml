@@ -1,0 +1,104 @@
+openapi: 3.0.3
+info:
+  title: 发布准备度与上线门禁 API
+  version: 1.0.0
+servers:
+  - url: /api/v1
+paths:
+  /releases:
+    post:
+      summary: 幂等创建发布版本
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateRelease'}
+      responses:
+        '200': {description: 发布版本}
+        '422': {$ref: '#/components/responses/ValidationError'}
+  /releases/{id}/submit:
+    post:
+      summary: 提交复核并计算阻塞状态
+      parameters:
+        - {$ref: '#/components/parameters/ReleaseID'}
+        - {$ref: '#/components/parameters/Revision'}
+      responses:
+        '200': {description: 新状态}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /releases/{id}/signoffs:
+    post:
+      summary: 多角色会签
+      parameters:
+        - {$ref: '#/components/parameters/ReleaseID'}
+        - {$ref: '#/components/parameters/Revision'}
+      responses:
+        '200': {description: 会签已记录}
+  /releases/{id}/evaluate:
+    post:
+      summary: 计算门禁并决定是否可发布
+      parameters:
+        - {$ref: '#/components/parameters/ReleaseID'}
+        - {$ref: '#/components/parameters/Revision'}
+      responses:
+        '200': {description: 门禁结果}
+  /releases/{id}/publish:
+    post:
+      summary: 发布并固化只读快照
+      parameters:
+        - {$ref: '#/components/parameters/ReleaseID'}
+        - {$ref: '#/components/parameters/Revision'}
+      responses:
+        '200': {description: 已发布}
+  /releases/{id}/execute:
+    post:
+      summary: 本地模拟发布执行
+      parameters:
+        - {$ref: '#/components/parameters/ReleaseID'}
+      responses:
+        '200': {description: 执行记录}
+  /releases/{id}/timeline:
+    get:
+      summary: 不可篡改审计时间线
+      parameters:
+        - {$ref: '#/components/parameters/ReleaseID'}
+      responses:
+        '200': {description: 审计事件}
+  /dashboard:
+    get:
+      summary: 个人待处理、日历和历史检索
+      responses:
+        '200': {description: 工作台}
+components:
+  parameters:
+    ReleaseID:
+      in: path
+      name: id
+      required: true
+      schema: {type: string}
+    Revision:
+      in: header
+      name: If-Match
+      required: true
+      schema: {type: integer, format: int64}
+  schemas:
+    CreateRelease:
+      type: object
+      required: [application_id, environment_id, version_name, owner_id, risk, template_id, template_version]
+      properties:
+        application_id: {type: string}
+        environment_id: {type: string}
+        version_name: {type: string}
+        owner_id: {type: string}
+        risk: {type: string, enum: [low, medium, high]}
+        template_id: {type: string}
+        template_version: {type: integer}
+  responses:
+    ValidationError:
+      description: 字段校验错误，响应包含 code、message、field_errors、request_id
+    Conflict:
+      description: 业务状态或乐观版本冲突

@@ -1,0 +1,1 @@
+<script setup lang="ts">const panels=['清单执行','证据附件','阻塞中心','多角色审批','版本比较','模拟发布']</script><template><section><p class="eyebrow">GATE WORKSPACE</p><h1>上线门禁工作台</h1><div class="grid"><article v-for="panel in panels"><h3>{{panel}}</h3><p>按版本快照记录操作，所有关键动作进入审计时间线。</p></article></div></section></template>

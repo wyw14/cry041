@@ -1,0 +1,1 @@
+<template><div class="shell"><aside><strong>门禁协同台</strong><nav><RouterLink to="/">发布列表</RouterLink><RouterLink to="/templates">模板配置</RouterLink><RouterLink to="/snapshots">历史快照</RouterLink></nav></aside><main><RouterView/></main></div></template>

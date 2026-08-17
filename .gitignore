@@ -1,0 +1,11 @@
+.env
+var/
+bin/
+coverage.out
+web/node_modules/
+web/dist/
+.gocache/
+.gomodcache/
+.codex/
+.claude/
+*.log
