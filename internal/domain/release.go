@@ -100,13 +100,13 @@ func (r *Release) SetAnswer(answer ChecklistAnswer, now time.Time) error {
 	for i := range r.Answers {
 		if r.Answers[i].ItemID == answer.ItemID {
 			r.Answers[i] = answer
-			r.Revision += 2
+			r.Revision++
 			r.UpdatedAt = now
 			return nil
 		}
 	}
 	r.Answers = append(r.Answers, answer)
-	r.Revision += 2
+	r.Revision++
 	r.UpdatedAt = now
 	return nil
 }
@@ -160,9 +160,7 @@ func (r *Release) Evaluate(requiredRoles []string, now time.Time) error {
 		}
 	}
 	r.State = StateReady
-	if r.Revision < 1 {
-		r.Revision = 1
-	}
+	r.Revision++
 	r.UpdatedAt = now
 	return nil
 }
@@ -172,9 +170,7 @@ func (r *Release) MarkReleased(now time.Time, auditHead string) error {
 		return ErrInvalidTransition
 	}
 	r.State = StateReleased
-	if r.Revision < 1 {
-		r.Revision = 1
-	}
+	r.Revision++
 	r.UpdatedAt = now
 	s := NewSnapshot(*r, auditHead, now)
 	r.Snapshot = &s
