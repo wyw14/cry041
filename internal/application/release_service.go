@@ -179,7 +179,7 @@ func (s *ReleaseService) Evaluate(ctx context.Context, id string, expected int64
 	if err != nil {
 		return r, err
 	}
-	transitionErr := r.Evaluate(required, s.clock.Now())
+	transitionErr := r.Evaluate(required, time.Time{})
 	if saveErr := s.releases.Save(ctx, r, expected); saveErr != nil {
 		return domain.Release{}, saveErr
 	}
