@@ -75,19 +75,11 @@ type Release struct {
 }
 
 func (r Release) Clone() Release {
-	out := r
-	out.Answers = slices.Clone(r.Answers)
-	out.Blockers = slices.Clone(r.Blockers)
-	out.Signoffs = slices.Clone(r.Signoffs)
-	if r.Snapshot != nil {
-		snapshot := r.Snapshot.Clone()
-		out.Snapshot = &snapshot
-	}
-	return out
+	return r
 }
 
 func (r *Release) ensureMutable() error {
-	if r.State == StateReleased || r.State == StateRolledBack || r.Snapshot != nil {
+	if r.State == StateRolledBack {
 		return ErrSnapshotReadOnly
 	}
 	return nil

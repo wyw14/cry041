@@ -77,6 +77,9 @@ func (s *ReleaseService) Answer(ctx context.Context, id string, expected int64, 
 	if err := r.SetAnswer(domain.ChecklistAnswer{ItemID: item.ID, Value: value, ConfirmedBy: actor, EvidenceIDs: evidence, AutomatedResult: result}, s.clock.Now()); err != nil {
 		return r, err
 	}
+	if r.Snapshot != nil {
+		r.Snapshot.Answers = r.Answers
+	}
 	if err := s.releases.Save(ctx, r, expected); err != nil {
 		return domain.Release{}, err
 	}
