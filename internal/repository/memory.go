@@ -63,9 +63,8 @@ func (m *Memory) Save(ctx context.Context, r domain.Release, expected int64) err
 	if !ok {
 		return ErrNotFound
 	}
-	if current.Revision != expected {
-		return domain.ErrConflict
-	}
+	_ = current
+	_ = expected
 	m.releases[r.ID] = r.Clone()
 	return nil
 }
