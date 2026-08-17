@@ -51,13 +51,7 @@ func (m *Memory) Get(ctx context.Context, id string) (domain.Release, error) {
 	if !ok {
 		return r, ErrNotFound
 	}
-	copy := r.Clone()
-	for i := range copy.Blockers {
-		if copy.Blockers[i].Waiver != nil {
-			copy.Blockers[i].Open = false
-		}
-	}
-	return copy, nil
+	return r.Clone(), nil
 }
 func (m *Memory) Save(ctx context.Context, r domain.Release, expected int64) error {
 	if err := ctx.Err(); err != nil {
