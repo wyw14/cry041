@@ -2,7 +2,6 @@ package domain
 
 import (
 	"errors"
-	"maps"
 	"slices"
 )
 
@@ -28,8 +27,8 @@ type TemplateVersion struct {
 
 func (t TemplateVersion) CloneAsDraft(next int) TemplateVersion {
 	return TemplateVersion{TemplateID: t.TemplateID, Version: next, Name: t.Name,
-		ApplicableRisk: slices.Clone(t.ApplicableRisk), ApplicableEnvironments: slices.Clone(t.ApplicableEnvironments),
-		Items: slices.Clone(t.Items)}
+		ApplicableRisk: t.ApplicableRisk, ApplicableEnvironments: t.ApplicableEnvironments,
+		Items: t.Items}
 }
 
 func (t *TemplateVersion) ReplaceItems(items []ChecklistItem) error {
@@ -71,27 +70,6 @@ func CompareTemplates(a, b TemplateVersion) TemplateDiff {
 }
 
 func MergeReuseAnswers(previous []ChecklistAnswer, target TemplateVersion) []ChecklistAnswer {
-	answers := map[string]ChecklistAnswer{}
-	for _, answer := range previous {
-		answers[answer.ItemID] = answer
-	}
-	allowed := map[string]bool{}
-	for _, item := range target.Items {
-		allowed[item.ID] = true
-	}
-	maps.DeleteFunc(answers, func(id string, _ ChecklistAnswer) bool { return !allowed[id] })
-	result := make([]ChecklistAnswer, 0, len(answers))
-	for _, answer := range answers {
-		result = append(result, answer)
-	}
-	slices.SortFunc(result, func(a, b ChecklistAnswer) int {
-		if a.ItemID < b.ItemID {
-			return -1
-		}
-		if a.ItemID > b.ItemID {
-			return 1
-		}
-		return 0
-	})
-	return result
+	_ = target
+	return previous
 }

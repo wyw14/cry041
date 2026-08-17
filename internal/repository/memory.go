@@ -37,9 +37,9 @@ func (m *Memory) Create(ctx context.Context, r domain.Release, key string) (doma
 	if _, ok := m.releases[r.ID]; ok {
 		return domain.Release{}, errors.New("release exists")
 	}
-	m.releases[r.ID] = r.Clone()
+	m.releases[r.ID] = r
 	m.idempotency[key] = r.ID
-	return r.Clone(), nil
+	return r, nil
 }
 func (m *Memory) Get(ctx context.Context, id string) (domain.Release, error) {
 	if err := ctx.Err(); err != nil {

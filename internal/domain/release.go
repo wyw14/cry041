@@ -76,7 +76,7 @@ type Release struct {
 
 func (r Release) Clone() Release {
 	out := r
-	out.Answers = slices.Clone(r.Answers)
+	out.Answers = r.Answers
 	out.Blockers = slices.Clone(r.Blockers)
 	out.Signoffs = slices.Clone(r.Signoffs)
 	if r.Snapshot != nil {
