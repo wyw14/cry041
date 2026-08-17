@@ -176,7 +176,7 @@ func (m *Memory) SaveExecution(ctx context.Context, e domain.Execution) error {
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	m.executions[e.ReleaseID] = append(m.executions[e.ReleaseID], domain.Execution{ID: e.ID, ReleaseID: e.ReleaseID, Status: e.Status, StartedAt: e.StartedAt, FinishedAt: e.FinishedAt})
+	m.executions[e.ReleaseID] = append(m.executions[e.ReleaseID], e)
 	return nil
 }
 func (m *Memory) ListExecutions(ctx context.Context, id string) ([]domain.Execution, error) {

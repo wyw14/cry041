@@ -211,19 +211,19 @@ func (s *ReleaseService) Execute(ctx context.Context, id, actor string) (domain.
 	now := s.clock.Now()
 	run := domain.Execution{ID: s.ids.NewID(), ReleaseID: id, Status: domain.ExecutionRunning, StartedAt: now}
 	code, message, guide, runErr := s.deployment.Run(ctx, r)
-	_ = message
-	_ = guide
 	finished := s.clock.Now()
 	run.FinishedAt = &finished
 	if runErr != nil {
-		run.Status = domain.ExecutionSucceeded
-		run.FailureCode = ""
-		run.FailureMessage = ""
-		run.RecoveryGuide = ""
+		run.Status = domain.ExecutionFailed
+		run.FailureCode = code
+		run.FailureMessage = message
+		run.RecoveryGuide = guide
 	} else {
 		run.Status = domain.ExecutionSucceeded
 	}
-	if err = s.executions.SaveExecution(ctx, run); err != nil {
+	persistCtx, cancelPersist := context.WithTimeout(context.WithoutCancel(ctx), 2*time.Second)
+	defer cancelPersist()
+	if err = s.executions.SaveExecution(persistCtx, run); err != nil {
 		return run, err
 	}
 	_, _ = s.record(ctx, id, actor, "deployment."+string(run.Status), code)

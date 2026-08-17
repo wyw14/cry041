@@ -1,7 +1,6 @@
 package httptransport
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"strconv"
@@ -139,7 +138,7 @@ func (h *Handler) execute(c *gin.Context) {
 	if !requireRole(c, "operations") {
 		return
 	}
-	out, err := h.commands.Execute(context.Background(), c.Param("id"), actor(c))
+	out, err := h.commands.Execute(c.Request.Context(), c.Param("id"), actor(c))
 	respond(c, out, err)
 }
 func (h *Handler) dashboard(c *gin.Context) {
