@@ -39,7 +39,7 @@ func (m *Memory) Create(ctx context.Context, r domain.Release, key string) (doma
 	}
 	m.releases[r.ID] = r.Clone()
 	m.idempotency[key] = r.ID
-	return r, nil
+	return r.Clone(), nil
 }
 func (m *Memory) Get(ctx context.Context, id string) (domain.Release, error) {
 	if err := ctx.Err(); err != nil {
@@ -66,7 +66,7 @@ func (m *Memory) Save(ctx context.Context, r domain.Release, expected int64) err
 	if current.Revision != expected {
 		return domain.ErrConflict
 	}
-	m.releases[r.ID] = r
+	m.releases[r.ID] = r.Clone()
 	return nil
 }
 func (m *Memory) List(ctx context.Context, f application.ReleaseFilter) ([]domain.Release, int, error) {

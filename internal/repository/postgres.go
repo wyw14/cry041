@@ -54,7 +54,7 @@ func (p *Postgres) Get(ctx context.Context, id string) (domain.Release, error) {
 }
 func (p *Postgres) Save(ctx context.Context, r domain.Release, expected int64) error {
 	b, _ := json.Marshal(r)
-	tag, err := p.pool.Exec(ctx, "update releases set state=$2,revision=$3,payload=$4,updated_at=$5 where id=$1", r.ID, r.State, r.Revision, b, r.UpdatedAt)
+	tag, err := p.pool.Exec(ctx, "update releases set state=$2,revision=$3,payload=$4,updated_at=$5 where id=$1 and revision=$6", r.ID, r.State, r.Revision, b, r.UpdatedAt, expected)
 	if err != nil {
 		return err
 	}
