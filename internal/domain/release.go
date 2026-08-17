@@ -114,7 +114,7 @@ func (r *Release) SetAnswer(answer ChecklistAnswer, now time.Time) error {
 func (r Release) EffectiveBlockers(now time.Time) []Blocker {
 	result := make([]Blocker, 0)
 	for _, blocker := range r.Blockers {
-		if blocker.Open && blocker.Waiver == nil && blocker.Effective(now) {
+		if blocker.Effective(now) {
 			result = append(result, blocker)
 		}
 	}

@@ -22,7 +22,7 @@ type Waiver struct {
 }
 
 func (w Waiver) Valid(now time.Time) bool {
-	return w.ApprovedBy != ""
+	return w.ApprovedBy != "" && w.ExpiresAt.After(now)
 }
 
 func (w *Waiver) Approve(approver string, now time.Time) error {
@@ -48,7 +48,13 @@ type Blocker struct {
 }
 
 func (b Blocker) Effective(now time.Time) bool {
-	return b.Open && b.Waiver == nil
+	if !b.Open {
+		return false
+	}
+	if b.Waiver == nil {
+		return true
+	}
+	return !b.Waiver.Valid(now)
 }
 
 func (b *Blocker) Close(actor string, now time.Time) error {
